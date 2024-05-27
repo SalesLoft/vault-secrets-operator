@@ -25,14 +25,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build and push docker image
-        uses: salesloft/build-push-action@v1
+      - name: Setup Docker BuildX
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & Push
+        uses: docker/build-push-action@v5
         with:
-          build-args: |
-            GO_VERSION: ${{ needs.build-pre-checks.outputs.go-version }}
-          registry: registry.qasalesloft.com
+          platforms: linux/amd64
           push: false
           file: Dockerfile
-          arch: x64
-          tags: |
-            vault-secrets-operator:${{ github.sha }}
+          build-args: |
+            GO_VERSION: ${{ needs.build-pre-checks.outputs.go-version }}
+          tags: vault-secrets-operator:${{ github.sha }}
