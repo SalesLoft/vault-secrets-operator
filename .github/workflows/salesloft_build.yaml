@@ -4,14 +4,13 @@ on:
   # Only build and push if tests pass
   workflow_run:
     workflows: ["Tests"]
-    types:
+    branches: [add_artifical_delay]
+    types: 
       - completed
-
 
 jobs:
   build-pre-checks:
     runs-on: ubuntu-latest
-    if: github.head_ref == 'add_artifical_delay'
     outputs:
       go-version: ${{ steps.setup-go.outputs.go-version }}
     steps:
