@@ -879,3 +879,5 @@ _Appears in:_
 | `delay` _integer_ | Delay adds an artifical delay between fetching the secret and writing it to Kubernetes. This is to cater for services that are eventually consistent |  |  |
 
 
+
+
