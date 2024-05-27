@@ -817,8 +817,8 @@ func Test_artificialDelay(t *testing.T) {
 				Client: tt.fields.Client,
 			}
 			start := time.Now()
-			_, _, err := r.syncSecret(tt.args.ctx, tt.args.vClient, tt.args.o)
-			if !tt.wantErr(t, err, fmt.Sprintf("syncSecret(%v, %v, %v)", tt.args.ctx, tt.args.vClient, tt.args.o)) {
+			_, _, err := r.syncSecret(tt.args.ctx, tt.args.vClient, tt.args.o, nil)
+			if !tt.wantErr(t, err, fmt.Sprintf("syncSecret(%v, %v, %v, %v)", tt.args.ctx, tt.args.vClient, tt.args.o, nil)) {
 				return
 			}
 
