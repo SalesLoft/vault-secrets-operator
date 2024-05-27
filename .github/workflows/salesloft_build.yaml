@@ -1,12 +1,9 @@
 name: Docker Build and Push
 
 on:
-  # Only build and push if tests pass
-  workflow_run:
-    workflows: ["Tests"]
-    branches: [add_artifical_delay]
-    types: 
-      - completed
+  push:
+    branches:
+      - 'add_artifical_delay'
 
 jobs:
   build-pre-checks:
