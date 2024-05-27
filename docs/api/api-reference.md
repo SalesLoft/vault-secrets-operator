@@ -698,6 +698,7 @@ _Appears in:_
 | `allowStaticCreds` _boolean_ | AllowStaticCreds should be set when syncing credentials that are periodically<br />rotated by the Vault server, rather than created upon request. These secrets<br />are sometimes referred to as "static roles", or "static credentials", with a<br />request path that contains "static-creds". |  |  |
 | `rolloutRestartTargets` _[RolloutRestartTarget](#rolloutrestarttarget) array_ | RolloutRestartTargets should be configured whenever the application(s) consuming the Vault secret does<br />not support dynamically reloading a rotated secret.<br />In that case one, or more RolloutRestartTarget(s) can be configured here. The Operator will<br />trigger a "rollout-restart" for each target whenever the Vault secret changes between reconciliation events.<br />See RolloutRestartTarget for more details. |  |  |
 | `destination` _[Destination](#destination)_ | Destination provides configuration necessary for syncing the Vault secret to Kubernetes. |  |  |
+| `delay` _integer_ | Delay adds an artifical delay between fetching the secret and writing it to Kubernetes.<br />This is to cater for services that are eventually consistent | 0 | Minimum: 0 <br /> |
 | `refreshAfter` _string_ | RefreshAfter a period of time for VSO to sync the source secret data, in<br />duration notation e.g. 30s, 1m, 24h. This value only needs to be set when<br />syncing from a secret's engine that does not provide a lease TTL in its<br />response. The value should be within the secret engine's configured ttl or<br />max_ttl. The source secret's lease duration takes precedence over this<br />configuration when it is greater than 0. |  | Pattern: `^([0-9]+(\.[0-9]+)?(s|m|h))$` <br />Type: string <br /> |
 
 
@@ -876,7 +877,6 @@ _Appears in:_
 | `hmacSecretData` _boolean_ | HMACSecretData determines whether the Operator computes the<br />HMAC of the Secret's data. The MAC value will be stored in<br />the resource's Status.SecretMac field, and will be used for drift detection<br />and during incoming Vault secret comparison.<br />Enabling this feature is recommended to ensure that Secret's data stays consistent with Vault. | true |  |
 | `rolloutRestartTargets` _[RolloutRestartTarget](#rolloutrestarttarget) array_ | RolloutRestartTargets should be configured whenever the application(s) consuming the Vault secret does<br />not support dynamically reloading a rotated secret.<br />In that case one, or more RolloutRestartTarget(s) can be configured here. The Operator will<br />trigger a "rollout-restart" for each target whenever the Vault secret changes between reconciliation events.<br />All configured targets wil be ignored if HMACSecretData is set to false.<br />See RolloutRestartTarget for more details. |  |  |
 | `destination` _[Destination](#destination)_ | Destination provides configuration necessary for syncing the Vault secret to Kubernetes. |  |  |
-| `delay` _integer_ | Delay adds an artifical delay between fetching the secret and writing it to Kubernetes. This is to cater for services that are eventually consistent | 0 |  |
 
 
 
