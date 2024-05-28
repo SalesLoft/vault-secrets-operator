@@ -27,7 +27,6 @@ import (
 	secretsv1beta1 "github.com/hashicorp/vault-secrets-operator/api/v1beta1"
 	"github.com/hashicorp/vault-secrets-operator/internal/credentials/provider"
 	"github.com/hashicorp/vault-secrets-operator/internal/vault"
-	"github.com/stretchr/testify/require"
 )
 
 func Test_computeRelativeHorizon(t *testing.T) {
