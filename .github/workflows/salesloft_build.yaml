@@ -3,7 +3,7 @@ name: Docker Build and Push
 on:
   push:
     branches:
-      - 'add_artifical_delay'
+      - 'add_artificial_delay'
 
 jobs:
   build-pre-checks:
