@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -20,6 +21,7 @@ import (
 	"github.com/hashicorp/vault-secrets-operator/api/v1beta1"
 	secretsv1beta1 "github.com/hashicorp/vault-secrets-operator/api/v1beta1"
 	"github.com/hashicorp/vault-secrets-operator/internal/vault"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_computeRelativeHorizon(t *testing.T) {
@@ -724,6 +726,111 @@ func Test_computeRotationTime(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actual := computeRotationTime(tt.vds)
 			assert.Equalf(t, tt.want, actual, "computeRotationTime(%v)", tt.vds)
+		})
+	}
+}
+
+func Test_artificialDelay(t *testing.T) {
+	type fields struct {
+		Client        client.Client
+		runtimePodUID types.UID
+	}
+	type args struct {
+		ctx     context.Context
+		vClient *vault.MockRecordingVaultClient
+		o       *secretsv1beta1.VaultDynamicSecret
+	}
+	tests := []struct {
+		name    string
+		envs    map[string]string
+		fields  fields
+		args    args
+		want    int
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "no-delay",
+			envs: map[string]string{},
+			fields: fields{
+				Client:        fake.NewClientBuilder().Build(),
+				runtimePodUID: "",
+			},
+			args: args{
+				ctx:     nil,
+				vClient: &vault.MockRecordingVaultClient{},
+				o: &secretsv1beta1.VaultDynamicSecret{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "baz",
+						Namespace: "default",
+					},
+					Spec: secretsv1beta1.VaultDynamicSecretSpec{
+						Mount: "baz",
+						Path:  "foo",
+						Destination: secretsv1beta1.Destination{
+							Name:   "baz",
+							Create: true,
+						},
+					},
+					Status: secretsv1beta1.VaultDynamicSecretStatus{},
+				},
+			},
+			wantErr: assert.NoError,
+			want:    0,
+		},
+		{
+			name: "with-two-second-delay",
+			envs: map[string]string{
+				"ARTIFICIAL_DELAY": "2",
+			},
+			fields: fields{
+				Client:        fake.NewClientBuilder().Build(),
+				runtimePodUID: "",
+			},
+			args: args{
+				ctx:     nil,
+				vClient: &vault.MockRecordingVaultClient{},
+				o: &secretsv1beta1.VaultDynamicSecret{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "baz",
+						Namespace: "default",
+					},
+					Spec: secretsv1beta1.VaultDynamicSecretSpec{
+						Mount: "baz",
+						Path:  "foo",
+						Destination: secretsv1beta1.Destination{
+							Name:   "baz",
+							Create: true,
+						},
+					},
+
+					Status: secretsv1beta1.VaultDynamicSecretStatus{},
+				},
+			},
+			want:    2,
+			wantErr: assert.NoError,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for env, val := range tt.envs {
+				require.NoError(t, os.Setenv(env, val))
+			}
+			r := &VaultDynamicSecretReconciler{
+				Client: tt.fields.Client,
+			}
+			start := time.Now()
+			_, _, err := r.syncSecret(tt.args.ctx, tt.args.vClient, tt.args.o, nil)
+			if !tt.wantErr(t, err, fmt.Sprintf("syncSecret(%v, %v, %v, %v)", tt.args.ctx, tt.args.vClient, tt.args.o, nil)) {
+				return
+			}
+
+			duration := time.Since(start).Round(time.Second).Seconds()
+
+			fmt.Println(duration)
+			if duration != float64(tt.want) {
+				fmt.Println(duration != float64(tt.want))
+				t.Error("Sleep length not correct")
+			}
 		})
 	}
 }

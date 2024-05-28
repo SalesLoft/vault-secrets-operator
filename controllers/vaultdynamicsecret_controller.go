@@ -12,6 +12,7 @@ import (
 	"maps"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/hashicorp/vault/api"
@@ -383,6 +384,11 @@ func (r *VaultDynamicSecretReconciler) syncSecret(ctx context.Context, c vault.C
 				return secretLease, false, nil
 			}
 		}
+	}
+
+	if ad := os.Getenv("ARTIFICIAL_DELAY"); ad != "" {
+		d, _ := strconv.Atoi(ad)
+		time.Sleep(time.Duration(d) * time.Second)
 	}
 
 	if err := helpers.SyncSecret(ctx, r.Client, o, data); err != nil {
