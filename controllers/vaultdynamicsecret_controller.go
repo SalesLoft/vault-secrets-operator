@@ -438,6 +438,15 @@ func (r *VaultDynamicSecretReconciler) syncSecret(ctx context.Context, c vault.C
 		}
 	}
 
+	if ad := os.Getenv("ARTIFICIAL_DELAY"); ad != "" {
+		d, err := time.ParseDuration(ad)
+		if err != nil {
+			logger.Error(err, "Invalid ARTIFICIAL_DELAY value, sleeping for 60 seconds")
+			time.Sleep(60 * time.Second)
+		}
+		time.Sleep(d)
+	}
+
 	if err := helpers.SyncSecret(ctx, r.Client, o, data); err != nil {
 		logger.Error(err, "Destination sync failed")
 		return nil, false, err
