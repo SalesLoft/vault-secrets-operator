@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -853,7 +854,8 @@ func Test_artificialDelay(t *testing.T) {
 				require.NoError(t, os.Setenv(env, val))
 			}
 			r := &VaultDynamicSecretReconciler{
-				Client: tt.fields.Client,
+				Client:   tt.fields.Client,
+				Recorder: &record.FakeRecorder{},
 			}
 			start := time.Now()
 			_, _, err := r.syncSecret(tt.args.ctx, tt.args.vClient, tt.args.o, nil)
