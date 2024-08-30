@@ -8,7 +8,7 @@ The Vault Secrets Operator operates by watching for changes to its supported set
 Each CRD provides the specification required to allow the *Operator* to synchronize a Vault Secrets to a Kubernetes Secret.
 The *Operator* writes the *source* Vault secret data directly to the *destination* Kubernetes Secret, ensuring that any
 changes made to the *source* are replicated to the *destination* over its lifetime. In this way, an application only needs
-to have access to the *destination* secret in order to make use of the secret data contained within.
+to have access to the *destination* secret in order to make use of the secret data contained within. 
 
 See the developer docs for more info [here](https://developer.hashicorp.com/vault/docs/platform/k8s/vso)
 
