@@ -44,7 +44,7 @@ jobs:
           file: Dockerfile
           build-args: |
             GO_VERSION: ${{ needs.build-pre-checks.outputs.go-version }}
-          tags: salesloft/vault-secrets-operator:${{ env.BRANCH_NAME }}
+          tags: salesloft/vault-secrets-operator:${{ env.BRANCH_NAME }}-salesloft
 
       - name: Image digest
-        run: echo "Image - vault-secrets-operator:${{ env.BRANCH_NAME }}"
+        run: echo "Image - vault-secrets-operator:${{ env.BRANCH_NAME }}-salesloft"
