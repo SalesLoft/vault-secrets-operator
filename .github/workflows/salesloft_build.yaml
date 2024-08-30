@@ -7,9 +7,7 @@ on:
 
 jobs:
   build-pre-checks:
-    runs-on:
-      group: org/techops
-      labels: [self-hosted]
+    runs-on: ubuntu-22.04
     outputs:
       go-version: ${{ steps.setup-go.outputs.go-version }}
     steps:
@@ -20,9 +18,7 @@ jobs:
           go-version-file: .go-version
 
   vso-docker-build-push:
-    runs-on:
-      group: org/techops
-      labels: [self-hosted]
+    runs-on: ubuntu-22.04
     needs: [build-pre-checks]
 
     steps:
@@ -38,10 +34,8 @@ jobs:
       - name: Login to Docker Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.SL_QA_DOCKER_REGISTRY }}
-          username: ${{ secrets.SL_QA_DOCKER_USER }}
-          password: ${{ secrets.SL_QA_DOCKER_TOKEN }}
-
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build & Push
         uses: docker/build-push-action@v5
         with:
@@ -50,7 +44,7 @@ jobs:
           file: Dockerfile
           build-args: |
             GO_VERSION: ${{ needs.build-pre-checks.outputs.go-version }}
-          tags: ${{ secrets.SL_QA_DOCKER_REGISTRY }}/vault-secrets-operator:${{ env.BRANCH_NAME }}-salesloft
+          tags: salesloft/vault-secrets-operator:${{ env.BRANCH_NAME }}
 
       - name: Image digest
-        run: echo "Image - vault-secrets-operator:${{ env.BRANCH_NAME }}-salesloft"
+        run: echo "Image - vault-secrets-operator:${{ env.BRANCH_NAME }}"
