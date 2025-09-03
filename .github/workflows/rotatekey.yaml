@@ -1,4 +1,4 @@
-name: GetPasswordForRotation
+name: GetPasswordForRotations 
 
 on:
   pull_request:
